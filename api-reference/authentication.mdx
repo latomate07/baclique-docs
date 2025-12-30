@@ -15,10 +15,20 @@ sk_live_example123456789
 
 Include your key in the `Authorization` header:
 
-```bash
-curl https://api.baclique.com/v1/campaigns \
-  -H "Authorization: Bearer sk_live_YOUR_API_KEY"
-```
+<CodeGroup>
+  ```bash cURL
+  curl https://api.baclique.com/v1/campaigns \
+    -H "Authorization: Bearer sk_live_YOUR_API_KEY"
+  ```
+
+  ```javascript JavaScript
+  fetch('https://api.baclique.com/v1/campaigns', {
+    headers: {
+      'Authorization': 'Bearer sk_live_YOUR_API_KEY'
+    }
+  });
+  ```
+</CodeGroup>
 
 ## Security Best Practices
 
