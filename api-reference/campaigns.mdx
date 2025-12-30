@@ -103,7 +103,8 @@ Content-Type: application/json
 | commission_type | string | ✅ | `fixed` or `percentage` |
 | commission_value | number | ✅ | Commission amount |
 | visibility | string | - | `public` (default) or `private` |
-| attribution_window | number | - | Days to track (default: 30) |
+| attribution_window | number | - | Days to track conversions (default: 30) |
+| maturation_days | number | - | Days before commission is withdrawable (default: 7) |
 
 ### Example
 
@@ -174,7 +175,8 @@ All fields are optional. Only include what you want to update.
 {
   "name": "Updated Campaign Name",
   "status": "paused",
-  "commission_value": 20
+  "commission_value": 20,
+  "maturation_days": 14
 }
 ```
 
