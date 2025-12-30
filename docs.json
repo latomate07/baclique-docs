@@ -9,64 +9,22 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "tabs": [
+    "groups": [
       {
-        "tab": "Guides",
-        "groups": [
-          {
-            "group": "Getting started",
-            "pages": [
-              "index",
-              "quickstart",
-              "development"
-            ]
-          },
-          {
-            "group": "Customization",
-            "pages": [
-              "essentials/settings",
-              "essentials/navigation"
-            ]
-          },
-          {
-            "group": "Writing content",
-            "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "AI tools",
-            "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
-            ]
-          }
+        "group": "Overview",
+        "pages": [
+          "api-reference/getting-started",
+          "api-reference/authentication",
+          "api-reference/reference"
         ]
       },
       {
-        "tab": "API reference",
-        "groups": [
-          {
-            "group": "Overview",
-            "pages": [
-              "api-reference/getting-started",
-              "api-reference/authentication",
-              "api-reference/reference"
-            ]
-          },
-          {
-            "group": "Resources",
-            "pages": [
-              "api-reference/campaigns",
-              "api-reference/affiliates",
-              "api-reference/conversions",
-              "api-reference/webhooks"
-            ]
-          }
+        "group": "Resources",
+        "pages": [
+          "api-reference/campaigns",
+          "api-reference/affiliates",
+          "api-reference/conversions",
+          "api-reference/webhooks"
         ]
       }
     ],
