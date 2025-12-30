@@ -116,8 +116,8 @@ Content-Type: application/json
 
 ### Behavior
 
-- If the email is already a BaClique user → Added immediately
-- If new email → User created and invitation sent
+- If the email is already a BaClique user → Added immediately as affiliate
+- If email is NOT a BaClique user → Returns `404: User not found. They must have a BaClique account.`
 - For **private campaigns** → Affiliate is auto-approved (no pending state)
 
 ---
