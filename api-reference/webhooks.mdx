@@ -280,39 +280,4 @@ After 3 failed attempts, the webhook is marked as failed.
 
 ---
 
-## Managing Webhooks via API
 
-### Create Endpoint
-
-```bash
-POST /api/v1/developer/webhooks
-Content-Type: application/json
-
-{
-  "url": "https://your-server.com/webhook",
-  "events": ["conversion.created", "conversion.approved"]
-}
-```
-
-### List Endpoints
-
-```bash
-GET /api/v1/developer/webhooks
-```
-
-### Delete Endpoint
-
-```bash
-DELETE /api/v1/developer/webhooks/:id
-```
-
-### Enable/Disable
-
-```bash
-PATCH /api/v1/developer/webhooks/:id
-Content-Type: application/json
-
-{
-  "enabled": false
-}
-```
