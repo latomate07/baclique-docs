@@ -1,0 +1,245 @@
+# Conversions API
+
+Track and list conversions in your campaigns.
+
+## Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/v1/campaigns/:campaign_id/conversions` | List conversions |
+| POST | `/v1/conversions` | Track a new conversion |
+
+---
+
+## List Conversions
+
+Get all conversions for a specific campaign.
+
+```bash
+GET /v1/campaigns/:campaign_id/conversions
+```
+
+### Query Parameters
+
+| Param | Type | Default | Description |
+|-------|------|---------|-------------|
+| status | string | - | Filter: `pending`, `approved`, `rejected` |
+| affiliate_id | string | - | Filter by affiliate |
+| limit | number | 50 | Results per page |
+| offset | number | 0 | Pagination offset |
+
+### Response
+
+```json
+{
+  "conversions": [
+    {
+      "id": "conv_abc123",
+      "campaign_id": "cmp_xyz789",
+      "affiliate_id": "aff_user123",
+      "external_id": "ORDER-12345",
+      "amount": 99.99,
+      "currency": "EUR",
+      "commission": 9.99,
+      "status": "pending",
+      "created_at": "2024-01-20T15:30:00Z",
+      "approved_at": null
+    }
+  ],
+  "pagination": {
+    "limit": 50,
+    "offset": 0,
+    "total": 128
+  }
+}
+```
+
+---
+
+## Track Conversion
+
+Record a new conversion from your backend (Server-to-Server).
+
+```bash
+POST /v1/conversions
+Content-Type: application/json
+```
+
+### Request Body
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| campaign_id | string | ✅ | Campaign ID |
+| affiliate_code | string | ✅* | Affiliate's tracking code |
+| click_id | string | ✅* | OR the `baclique_id` from cookie |
+| external_id | string | ✅ | Your order/transaction ID (dedup) |
+| amount | number | - | Sale amount (default: 0) |
+| currency | string | - | 3-letter code (default: EUR) |
+
+> *Either `affiliate_code` OR `click_id` is required
+
+### Example with Affiliate Code
+
+```bash
+curl -X POST https://api.baclique.com/v1/conversions \
+  -H "Authorization: Bearer sk_live_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "campaign_id": "cmp_abc123",
+    "affiliate_code": "summer-x7k2",
+    "external_id": "ORDER-12345",
+    "amount": 149.99,
+    "currency": "EUR"
+  }'
+```
+
+### Example with Click ID
+
+```bash
+curl -X POST https://api.baclique.com/v1/conversions \
+  -H "Authorization: Bearer sk_live_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "campaign_id": "cmp_abc123",
+    "click_id": "550e8400-e29b-41d4-a716-446655440000",
+    "external_id": "ORDER-12346",
+    "amount": 79.99
+  }'
+```
+
+### Response
+
+```json
+{
+  "success": true,
+  "conversion": {
+    "id": "conv_xyz789",
+    "commission": 14.99,
+    "status": "pending"
+  }
+}
+```
+
+---
+
+## Conversion Flow
+
+```
+1. Customer clicks affiliate link
+   → Cookie `baclique_id` is set
+
+2. Customer completes purchase
+   → Your backend calls POST /v1/conversions
+
+3. Conversion is created with status: pending
+
+4. You approve/reject in dashboard
+   → Webhook sent: conversion.approved
+
+5. Commission is added to affiliate payout
+```
+
+---
+
+## Deduplication
+
+The `external_id` prevents duplicate conversions:
+
+- If you send the same `external_id` twice, the second call returns an error
+- Use your order ID, transaction ID, or any unique identifier
+
+```json
+{
+  "success": false,
+  "error": "Conversion already exists for this external_id"
+}
+```
+
+---
+
+## Conversion Statuses
+
+| Status | Description |
+|--------|-------------|
+| `pending` | Awaiting your approval |
+| `approved` | Commission will be paid to affiliate |
+| `rejected` | No commission (refund, fraud, etc.) |
+
+---
+
+## Code Examples
+
+### Node.js - Track Conversion
+
+```javascript
+async function trackConversion(order) {
+  const response = await fetch('https://api.baclique.com/v1/conversions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${process.env.BACLIQUE_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      campaign_id: order.campaign_id,
+      affiliate_code: order.affiliate_code,
+      external_id: order.id,
+      amount: order.total,
+      currency: order.currency
+    })
+  });
+  
+  return response.json();
+}
+```
+
+### PHP - Track Conversion
+
+```php
+function trackConversion($order) {
+    $ch = curl_init('https://api.baclique.com/v1/conversions');
+    
+    curl_setopt_array($ch, [
+        CURLOPT_POST => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER => [
+            'Authorization: Bearer ' . getenv('BACLIQUE_API_KEY'),
+            'Content-Type: application/json'
+        ],
+        CURLOPT_POSTFIELDS => json_encode([
+            'campaign_id' => $order['campaign_id'],
+            'affiliate_code' => $order['affiliate_code'],
+            'external_id' => $order['id'],
+            'amount' => $order['total']
+        ])
+    ]);
+    
+    $response = curl_exec($ch);
+    curl_close($ch);
+    
+    return json_decode($response, true);
+}
+```
+
+### Python - Track Conversion
+
+```python
+import requests
+import os
+
+def track_conversion(order):
+    response = requests.post(
+        'https://api.baclique.com/v1/conversions',
+        headers={
+            'Authorization': f'Bearer {os.environ["BACLIQUE_API_KEY"]}',
+            'Content-Type': 'application/json'
+        },
+        json={
+            'campaign_id': order['campaign_id'],
+            'affiliate_code': order['affiliate_code'],
+            'external_id': order['id'],
+            'amount': order['total'],
+            'currency': order.get('currency', 'EUR')
+        }
+    )
+    return response.json()
+```

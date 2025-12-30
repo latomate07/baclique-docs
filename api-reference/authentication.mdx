@@ -1,0 +1,135 @@
+# Authentication
+
+The BaClique API uses API keys to authenticate requests. Each key is tied to your account and has full access to your data.
+
+## API Key Format
+
+```
+sk_live_example123456789
+```
+
+- `sk_` = Secret Key prefix
+- `live_` = Live mode (production)
+- Followed by 32+ random characters
+
+## Using Your API Key
+
+Include your key in the `Authorization` header:
+
+```bash
+curl https://api.baclique.com/v1/campaigns \
+  -H "Authorization: Bearer sk_live_YOUR_API_KEY"
+```
+
+## Managing API Keys
+
+### Create a Key
+
+```bash
+POST /api/v1/developer/keys
+Content-Type: application/json
+
+{
+  "name": "Production Server"
+}
+```
+
+Response:
+```json
+{
+  "success": true,
+  "api_key": {
+    "id": "key_abc123",
+    "name": "Production Server",
+    "key": "sk_live_xxxxxxxx...",  // Only shown once!
+    "prefix": "sk_live_xxxx...",
+    "created_at": "2024-01-15T10:30:00Z"
+  }
+}
+```
+
+> ⚠️ **Important:** The full API key is only shown once at creation. Store it securely!
+
+### List Keys
+
+```bash
+GET /api/v1/developer/keys
+```
+
+Response:
+```json
+{
+  "api_keys": [
+    {
+      "id": "key_abc123",
+      "name": "Production Server",
+      "prefix": "sk_live_xxxx...",
+      "last_used_at": "2024-01-20T14:25:00Z",
+      "created_at": "2024-01-15T10:30:00Z"
+    }
+  ]
+}
+```
+
+### Revoke a Key
+
+```bash
+DELETE /api/v1/developer/keys
+Content-Type: application/json
+
+{
+  "key_id": "key_abc123"
+}
+```
+
+## Security Best Practices
+
+1. **Never commit API keys** to version control
+2. **Use environment variables** to store keys
+3. **Rotate keys regularly** if you suspect a leak
+4. **Use different keys** for development and production
+5. **Limit exposure** - only your backend should use the API key
+
+### Environment Variable Example
+
+```bash
+# .env file (never commit this!)
+BACLIQUE_API_KEY=sk_live_your_key_here
+```
+
+```javascript
+// Node.js
+const apiKey = process.env.BACLIQUE_API_KEY;
+
+fetch('https://api.baclique.com/v1/campaigns', {
+  headers: {
+    'Authorization': `Bearer ${apiKey}`
+  }
+});
+```
+
+## Rate Limiting
+
+- **100 requests per minute** per API key
+- Rate limit headers are included in responses:
+
+```
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 95
+X-RateLimit-Reset: 1705765200
+```
+
+When exceeded:
+```json
+{
+  "error": "Rate limit exceeded. 100 requests per minute."
+}
+```
+
+## Errors
+
+| Status | Error | Solution |
+|--------|-------|----------|
+| 401 | Invalid or missing API key | Check your Authorization header |
+| 403 | PRO plan required | Upgrade your subscription |
+| 429 | Rate limit exceeded | Wait and retry with backoff |

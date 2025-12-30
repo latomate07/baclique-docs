@@ -1,0 +1,207 @@
+# Campaigns API
+
+Manage your affiliate campaigns programmatically.
+
+## Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/v1/campaigns` | List all campaigns |
+| GET | `/v1/campaigns/:id` | Get a campaign |
+| POST | `/v1/campaigns` | Create a campaign |
+| PATCH | `/v1/campaigns/:id` | Update a campaign |
+| DELETE | `/v1/campaigns/:id` | Archive a campaign |
+
+---
+
+## List Campaigns
+
+```bash
+GET /v1/campaigns
+```
+
+### Query Parameters
+
+| Param | Type | Default | Description |
+|-------|------|---------|-------------|
+| status | string | - | Filter by status: `active`, `paused`, `archived` |
+| limit | number | 50 | Results per page (max 100) |
+| offset | number | 0 | Pagination offset |
+
+### Response
+
+```json
+{
+  "campaigns": [
+    {
+      "id": "cmp_abc123",
+      "name": "Summer Sale 2024",
+      "status": "active",
+      "type": "CPA",
+      "commission_type": "percentage",
+      "commission_value": 10,
+      "target_url": "https://example.com/summer",
+      "created_at": "2024-01-15T10:30:00Z"
+    }
+  ],
+  "pagination": {
+    "limit": 50,
+    "offset": 0,
+    "total": 3
+  }
+}
+```
+
+---
+
+## Get Campaign
+
+```bash
+GET /v1/campaigns/:id
+```
+
+### Response
+
+```json
+{
+  "campaign": {
+    "id": "cmp_abc123",
+    "name": "Summer Sale 2024",
+    "status": "active",
+    "type": "CPA",
+    "commission_type": "percentage",
+    "commission_value": 10,
+    "target_url": "https://example.com/summer",
+    "visibility": "public",
+    "attribution_window": 30,
+    "created_at": "2024-01-15T10:30:00Z",
+    "stats": {
+      "total_affiliates": 45,
+      "total_clicks": 12500,
+      "total_conversions": 320,
+      "total_revenue": 31800.00
+    }
+  }
+}
+```
+
+---
+
+## Create Campaign
+
+```bash
+POST /v1/campaigns
+Content-Type: application/json
+```
+
+### Request Body
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| name | string | ✅ | Campaign name |
+| target_url | string | ✅ | Destination URL |
+| type | string | ✅ | `CPA` (conversion-based) |
+| commission_type | string | ✅ | `fixed` or `percentage` |
+| commission_value | number | ✅ | Commission amount |
+| visibility | string | - | `public` (default) or `private` |
+| attribution_window | number | - | Days to track (default: 30) |
+
+### Example
+
+```bash
+curl -X POST https://api.baclique.com/v1/campaigns \
+  -H "Authorization: Bearer sk_live_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Black Friday 2024",
+    "target_url": "https://example.com/blackfriday",
+    "type": "CPA",
+    "commission_type": "percentage",
+    "commission_value": 15,
+    "visibility": "public"
+  }'
+```
+
+### Response
+
+```json
+{
+  "success": true,
+  "campaign": {
+    "id": "cmp_xyz789",
+    "name": "Black Friday 2024",
+    "status": "active",
+    "tracking_url": "https://c.baclique.com/cmp_xyz789"
+  }
+}
+```
+
+---
+
+## Update Campaign
+
+```bash
+PATCH /v1/campaigns/:id
+Content-Type: application/json
+```
+
+### Request Body
+
+All fields are optional. Only include what you want to update.
+
+```json
+{
+  "name": "Updated Campaign Name",
+  "status": "paused",
+  "commission_value": 20
+}
+```
+
+### Example
+
+```bash
+curl -X PATCH https://api.baclique.com/v1/campaigns/cmp_abc123 \
+  -H "Authorization: Bearer sk_live_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"status": "paused"}'
+```
+
+### Response
+
+```json
+{
+  "success": true,
+  "campaign": {
+    "id": "cmp_abc123",
+    "status": "paused"
+  }
+}
+```
+
+---
+
+## Archive Campaign
+
+Archiving a campaign stops all tracking but preserves historical data.
+
+```bash
+DELETE /v1/campaigns/:id
+```
+
+### Example
+
+```bash
+curl -X DELETE https://api.baclique.com/v1/campaigns/cmp_abc123 \
+  -H "Authorization: Bearer sk_live_YOUR_API_KEY"
+```
+
+### Response
+
+```json
+{
+  "success": true,
+  "message": "Campaign archived"
+}
+```
+
+> 💡 **Tip:** Archived campaigns can be reactivated by updating their status to `active`.

@@ -1,0 +1,102 @@
+# API Reference
+
+Quick reference for all BaClique API endpoints.
+
+## Base URL
+
+```
+https://api.baclique.com/v1
+```
+
+## Authentication
+
+```
+Authorization: Bearer sk_live_YOUR_API_KEY
+```
+
+---
+
+## Campaigns
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/v1/campaigns` | List all campaigns |
+| `GET` | `/v1/campaigns/:id` | Get a campaign |
+| `POST` | `/v1/campaigns` | Create a campaign |
+| `PATCH` | `/v1/campaigns/:id` | Update a campaign |
+| `DELETE` | `/v1/campaigns/:id` | Archive a campaign |
+
+---
+
+## Affiliates
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/v1/campaigns/:id/affiliates` | List affiliates |
+| `POST` | `/v1/campaigns/:id/affiliates` | Add affiliate |
+| `DELETE` | `/v1/campaigns/:id/affiliates/:aff_id` | Remove affiliate |
+
+---
+
+## Conversions
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/v1/campaigns/:id/conversions` | List conversions |
+| `POST` | `/v1/conversions` | Track a conversion |
+
+---
+
+## API Keys (Dashboard)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/v1/developer/keys` | List your API keys |
+| `POST` | `/api/v1/developer/keys` | Create API key |
+| `DELETE` | `/api/v1/developer/keys` | Revoke API key |
+
+---
+
+## Webhooks (Dashboard)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/v1/developer/webhooks` | List webhook endpoints |
+| `POST` | `/api/v1/developer/webhooks` | Create endpoint |
+| `PATCH` | `/api/v1/developer/webhooks/:id` | Update endpoint |
+| `DELETE` | `/api/v1/developer/webhooks/:id` | Delete endpoint |
+| `GET` | `/api/v1/developer/webhooks/:id/deliveries` | Get delivery history |
+
+---
+
+## Webhook Events
+
+| Event | Description |
+|-------|-------------|
+| `conversion.created` | New conversion tracked |
+| `conversion.approved` | Conversion approved |
+| `conversion.rejected` | Conversion rejected |
+| `affiliate.joined` | Affiliate joins campaign |
+| `affiliate.approved` | Affiliate approved |
+| `payout.created` | Payout initiated |
+
+---
+
+## Rate Limits
+
+- **100 requests/minute** per API key
+- Returns `429 Too Many Requests` when exceeded
+
+---
+
+## HTTP Status Codes
+
+| Code | Description |
+|------|-------------|
+| `200` | Success |
+| `400` | Bad Request |
+| `401` | Unauthorized |
+| `403` | Forbidden (PRO required) |
+| `404` | Not Found |
+| `429` | Rate Limited |
+| `500` | Server Error |
