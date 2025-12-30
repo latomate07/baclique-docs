@@ -72,7 +72,7 @@ Content-Type: application/json
 | affiliate_code | string | ✅* | Affiliate's tracking code |
 | click_id | string | ✅* | OR the `baclique_id` from cookie |
 | external_id | string | ✅ | Your order/transaction ID (dedup) |
-| amount | number | - | Sale amount (default: 0) |
+| amount | number | - | Conversion value (default: 0) |
 | currency | string | - | 3-letter code (default: EUR) |
 
 > *Either `affiliate_code` OR `click_id` is required
@@ -127,7 +127,7 @@ curl -X POST https://api.baclique.com/v1/conversions \
 1. Customer clicks affiliate link
    → Cookie `baclique_id` is set
 
-2. Customer completes purchase
+2. Customer completes action (purchase, signup, etc.)
    → Your backend calls POST /v1/conversions
 
 3. Conversion is created with status: pending
