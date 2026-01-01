@@ -6,7 +6,7 @@ Manage affiliates within your campaigns.
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/v1/campaigns/:campaign_id/affiliates` | List affiliates |
-| POST | `/v1/campaigns/:campaign_id/affiliates` | Add an affiliate |
+| POST | `/v1/campaigns/:campaign_id/affiliates` | Invite an affiliate (returns invite link) |
 | DELETE | `/v1/campaigns/:campaign_id/affiliates/:affiliate_id` | Remove an affiliate |
 
 ---
@@ -58,9 +58,9 @@ GET /v1/campaigns/:campaign_id/affiliates
 
 ---
 
-## Add Affiliate
+## Invite Affiliate
 
-Invite an affiliate to your campaign by email.
+Send an invitation to join your campaign. The affiliate must click the link to accept.
 
 ```bash
 POST /v1/campaigns/:campaign_id/affiliates
@@ -103,21 +103,23 @@ Content-Type: application/json
 
 ```json
 {
-  "success": true,
-  "affiliate": {
-    "id": "aff_xyz789",
-    "email": "affiliate@example.com",
-    "status": "active",
-    "affiliate_code": "summer-k3m9",
-    "unique_link": "https://c.baclique.com/summer-k3m9"
-  }
+  "status": "pending_invite",
+  "email": "affiliate@example.com",
+  "invite_link": "https://baclique.com/c/summer-sale?invite=abc123def456",
+  "expires_at": "2025-01-08T14:00:00Z"
 }
 ```
 
 ### Behavior
 
-- If the email is already a BaClique user → Added immediately as affiliate
-- If email is NOT a BaClique user → Returns `404: User not found. They must have a BaClique account.`
+> ⚠️ **Important:** For privacy and consent reasons, affiliates are NOT added directly.
+
+1. An **invitation link** is generated (valid for 7 days)
+2. **You send this link** to the affiliate (via email, Slack, etc.)
+3. The affiliate **clicks the link** and creates/logs into their BaClique account
+4. They are then added to your campaign
+
+This ensures the affiliate has given explicit consent to join your program.
 
 ---
 
@@ -191,12 +193,13 @@ async function listAffiliates(campaignId) {
 }
 ```
 
-### Python - Add Affiliate
+### Python - Invite Affiliate
 
 ```python
 import requests
+import os
 
-def add_affiliate(campaign_id, email):
+def invite_affiliate(campaign_id, email):
     response = requests.post(
         f"https://api.baclique.com/v1/campaigns/{campaign_id}/affiliates",
         headers={
@@ -205,5 +208,9 @@ def add_affiliate(campaign_id, email):
         },
         json={"email": email}
     )
-    return response.json()
+    data = response.json()
+    
+    # Returns { status, email, invite_link, expires_at }
+    print(f"Send this link to {email}: {data['invite_link']}")
+    return data
 ```
