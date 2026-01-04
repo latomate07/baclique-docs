@@ -162,6 +162,15 @@ Content-Type: application/json
 }
 ```
 
+### Errors
+
+| Code | Description |
+|------|-------------|
+| 400 | Missing required fields or duplicate conversion |
+| 401 | Invalid API Key or Signature |
+| 403 | Campaign budget exceeded or Affiliate suspended |
+| 403 | Feature restricted to Pro plan |
+
 ---
 
 ## Conversion Flow
@@ -211,7 +220,7 @@ The `external_id` prevents duplicate conversions:
 
 ## Reject Conversion
 
-Reject a conversion (e.g., for refunds or cancellations). Only works during the maturation period.
+Reject a conversion (e.g., for refunds or cancellations). **This action refunds the commission amount to the campaign budget.** Only works during the maturation period.
 
 ```bash
 POST /v1/conversions/:id/reject
@@ -272,7 +281,7 @@ POST /v1/conversions/:id/reject
 
 ## Unreject Conversion
 
-Restore a previously rejected conversion (e.g., if a refund was cancelled). Only works during the maturation period.
+Restore a previously rejected conversion. **This action deducts the commission amount from the campaign budget again.** Only works during the maturation period.
 
 ```bash
 POST /v1/conversions/:id/unreject
