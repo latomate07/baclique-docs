@@ -47,9 +47,16 @@ Response:
       "status": "active",
       "type": "CPA",
       "commission_type": "percentage",
-      "commission_value": 10
+      "commission_value": 10,
+      "target_url": "https://example.com/summer",
+      "created_at": "2024-01-15T10:30:00.000Z"
     }
-  ]
+  ],
+  "pagination": {
+    "limit": 50,
+    "offset": 0,
+    "total": 1
+  }
 }
 ```
 
@@ -125,7 +132,7 @@ All responses are JSON with this structure:
 ```json
 {
   "campaigns": [...],
-  "pagination": { "page": 1, "limit": 50, "total": 120 }
+  "pagination": { "limit": 50, "offset": 0, "total": 120 }
 }
 ```
 
